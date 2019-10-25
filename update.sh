@@ -37,6 +37,7 @@ IFS=',' read -r -a DEPLOYMENTS <<< "${PLUGIN_DEPLOYMENT}"
 IFS=',' read -r -a CONTAINERS <<< "${PLUGIN_CONTAINER}"
 for DEPLOY in ${DEPLOYMENTS[@]}; do
   echo Deploying to $KUBERNETES_SERVER
+  kubectl patch deployment ${DEPLOY} -p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"build\":\"$DRONE_COMMIT\"}}}}}}"
   for CONTAINER in ${CONTAINERS[@]}; do
     if [[ ${PLUGIN_FORCE} == "true" ]]; then
       kubectl -n ${PLUGIN_NAMESPACE} set image deployment/${DEPLOY} \
